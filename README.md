@@ -164,4 +164,3 @@ This project is free for learning and educational purposes.
 🤝 Author
 
 Developed by Nathasha Florin
-S
