@@ -4,53 +4,108 @@
     <title>Face Recognition</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
     <style>
+        :root{
+            --bg:#0b1020;
+            --card:#0f1724cc;
+            --accent:#00ffbb;
+            --muted:#9aa4b2;
+        }
+        *{font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
         body {
-            background-color: #121212;
-            color: white;
-            text-align: center;
-            padding: 20px;
+            background: linear-gradient(135deg,#061021 0%, #071629 40%, #08121a 100%);
+            color: #e9eef6;
+            padding: 28px 16px;
+            -webkit-font-smoothing:antialiased;
         }
-        #video {
-            width: 450px;
-            height: 330px;
-            border-radius: 10px;
-            border: 3px solid #00ffbb;
+        .app-card{
+            background: rgba(14,20,30,0.55);
+            border-radius: 14px;
+            padding: 18px;
+            box-shadow: 0 10px 30px rgba(3,6,12,0.6);
+            max-width: 980px;
+            margin: 0 auto;
+            border: 1px solid rgba(255,255,255,0.04);
         }
-        .btn-custom {
-            width: 200px;
-            margin: 10px;
+        #video{
+            width:100%;
+            max-width:480px;
+            height:auto;
+            border-radius:12px;
+            border: 2px solid rgba(0,255,187,0.12);
+            background:#000;
         }
+        .controls{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+        .btn-custom{min-width:170px}
+        .progress {height:28px;border-radius: 8px;overflow:hidden}
+        .progress-bar{transition:width .25s ease}
+        .muted{color:var(--muted)}
+        .thumbs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px}
+        .thumbs img{width:72px;height:54px;object-fit:cover;border-radius:6px;border:1px solid rgba(255,255,255,0.06);box-shadow:0 6px 18px rgba(2,6,10,0.45)}
+        .status-line{display:flex;justify-content:space-between;align-items:center;gap:12px}
+        @media (max-width:700px){.app-card{padding:12px}}
     </style>
 </head>
 
 <body>
 
-<h1 class="mb-4">📸 Face Recognition System</h1>
+<div class="app-card">
+    <div class="row align-items-center">
+        <div class="col-lg-6 text-center mb-3">
+            <h2 class="h3 mb-3">📸 Face Recognition</h2>
+            <div class="d-inline-block" style="width:100%;max-width:480px">
+                <video id="video" autoplay playsinline></video>
+            </div>
+            <div class="mt-3 muted">Make sure your face is well lit and centered.</div>
+        </div>
 
-<video id="video" autoplay></video>
+        <div class="col-lg-6">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <h3 class="h5 mb-1">Enroll a New Face</h3>
+                    <div class="muted">We will capture 15 images to create a good encoding.</div>
+                </div>
+                <div class="text-end muted">Progress</div>
+            </div>
 
-<!-- Progress Bar -->
-<div class="container mt-4 w-50">
-    <div class="progress" style="height: 25px;">
-        <div id="progressBar" class="progress-bar progress-bar-striped bg-success"
-            role="progressbar" style="width: 0%;">
-            0%
+            <div class="mt-3 status-line">
+                <input type="text" id="name" class="form-control" placeholder="Enter your name" style="max-width:280px">
+                <div class="controls">
+                    <button id="enrollBtn" class="btn btn-success btn-custom" onclick="enrollFace()">Enroll Face</button>
+                    <button id="recognizeBtn" class="btn btn-primary btn-custom" onclick="recognizeFace()">Recognize</button>
+                </div>
+            </div>
+
+            <div class="mt-3">
+                <div class="progress">
+                    <div id="progressBar" class="progress-bar bg-success progress-bar-striped" role="progressbar" style="width:0%">0% (0/15)</div>
+                </div>
+                <div id="progressHint" class="muted small mt-2">Idle</div>
+            </div>
+
+            <div id="thumbs" class="thumbs" aria-live="polite" aria-atomic="true"></div>
+
+            <div class="mt-4">
+                <a href="/admin" class="btn btn-outline-warning">Admin Panel</a>
+            </div>
         </div>
     </div>
+
+    <!-- Toast for messages -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index:1080">
+        <div id="liveToast" class="toast align-items-center text-bg-dark border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div id="toastBody" class="toast-body">Hello</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
 </div>
 
-<br><br>
-
-<input type="text" id="name" class="form-control w-25 mx-auto" placeholder="Enter Your Name">
-
-<br>
-
-<button class="btn btn-success btn-custom" onclick="enrollFace()">Enroll Face</button>
-<button class="btn btn-primary btn-custom" onclick="recognizeFace()">Recognize Face</button>
-<a href="/admin" class="btn btn-warning btn-custom">Admin Panel</a>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/static/js/script.js"></script>
 
 </body>

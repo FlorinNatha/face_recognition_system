@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_from_directory, abort
 import face_recognition
 import numpy as np
 import base64
 import os
 import cv2
+import shutil
 
 app = Flask(__name__)
 
@@ -27,6 +28,65 @@ def index():
 def admin():
     users = [f.replace(".npy", "") for f in os.listdir(ENC_DIR)]
     return render_template("admin.html", users=users)
+
+
+# ------------------ API: Admin helpers -----------------
+
+
+@app.route('/api/users')
+def api_users():
+    users = [f.replace('.npy', '') for f in os.listdir(ENC_DIR)]
+    return jsonify({'users': users})
+
+
+@app.route('/api/users/<name>/images')
+def api_user_images(name):
+    safe = os.path.basename(name)
+    user_folder = os.path.join(IMG_DIR, safe)
+    if not os.path.exists(user_folder):
+        return jsonify({'images': []})
+    images = [f for f in os.listdir(user_folder) if os.path.isfile(os.path.join(user_folder, f))]
+    # create URLs for each image
+    urls = [f'/user_image/{safe}/{f}' for f in images]
+    return jsonify({'images': urls})
+
+
+@app.route('/user_image/<name>/<filename>')
+def user_image(name, filename):
+    safe_name = os.path.basename(name)
+    safe_file = os.path.basename(filename)
+    folder = os.path.join(IMG_DIR, safe_name)
+    if not os.path.exists(os.path.join(folder, safe_file)):
+        abort(404)
+    return send_from_directory(folder, safe_file)
+
+
+@app.route('/api/users/<name>/encoding')
+def api_user_encoding(name):
+    safe = os.path.basename(name)
+    enc_file = os.path.join(ENC_DIR, f'{safe}.npy')
+    if not os.path.exists(enc_file):
+        abort(404)
+    return send_from_directory(ENC_DIR, f'{safe}.npy', as_attachment=True)
+
+
+@app.route('/api/users/<name>', methods=['DELETE'])
+def api_delete_user(name):
+    safe = os.path.basename(name)
+    enc_file = os.path.join(ENC_DIR, f'{safe}.npy')
+    user_folder = os.path.join(IMG_DIR, safe)
+    deleted = []
+    try:
+        if os.path.exists(enc_file):
+            os.remove(enc_file)
+            deleted.append('encoding')
+        if os.path.exists(user_folder):
+            shutil.rmtree(user_folder)
+            deleted.append('images')
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+    return jsonify({'status': 'ok', 'deleted': deleted})
 
 
 # ------------------ ENROLL USER ---------------------
