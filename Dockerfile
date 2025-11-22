@@ -3,7 +3,7 @@ FROM python:3.10-slim
 # Install system dependencies needed to build dlib and OpenCV
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential cmake git pkg-config libgtk-3-dev libboost-all-dev \
-    libjpeg-dev libpng-dev libtiff-dev libatlas-base-dev libopenblas-dev \
+    libjpeg-dev libpng-dev libtiff-dev libopenblas-dev libblas-dev liblapack-dev gfortran python3-dev \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
