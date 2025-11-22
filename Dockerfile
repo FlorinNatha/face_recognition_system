@@ -16,8 +16,9 @@ RUN pip install -r /app/requirements.txt
 # copy the app
 COPY . /app
 
-
 ENV PYTHONUNBUFFERED=1
 EXPOSE 5000
 
-CMD ["gunicorn", "app:app", "--bind", "0.0.0.0:5000"]
+# make start script executable and use it so PORT env is handled correctly
+RUN chmod +x /app/start.sh
+CMD ["/app/start.sh"]
