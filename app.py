@@ -1,3 +1,5 @@
+import utils.transport
+import utils.session
 from flask import Flask, render_template, request, jsonify, send_from_directory, abort
 import face_recognition
 import numpy as np

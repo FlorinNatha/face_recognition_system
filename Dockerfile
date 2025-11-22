@@ -16,6 +16,7 @@ RUN pip install -r /app/requirements.txt
 # copy the app
 COPY . /app
 
+
 ENV PYTHONUNBUFFERED=1
 EXPOSE 5000
 
